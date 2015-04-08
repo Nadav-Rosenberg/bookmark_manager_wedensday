@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require 'data_mapper'
+require 'tilt/erb'
 
 env = ENV['RACK_ENV'] || 'development'
 
@@ -18,6 +19,8 @@ class BookmarkManager < Sinatra::Base
   end
 
   post '/links' do
+    puts "here"
+    p params
     url = params['url']
     title = params['title']
     Link.create(url: url, title: title)
