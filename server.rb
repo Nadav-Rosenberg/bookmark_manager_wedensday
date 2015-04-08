@@ -61,13 +61,12 @@ class BookmarkManager < Sinatra::Base
       session[:user_id] = @user.id
       redirect to('/')
     else
-      flash[:notice] = 'Sorry, your passwords do not match'
+      flash.now[:errors] = @user.errors.full_messages
       erb :'users/new'
     end
   end
 
   # start the server if ruby file executed directly
   run! if app_file == BookmarkManager
+
 end
-
-
