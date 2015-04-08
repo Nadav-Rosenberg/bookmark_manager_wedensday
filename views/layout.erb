@@ -1,4 +1,8 @@
 <body>
+  <% if current_user %>
+    Welcome, <%= current_user.email %>
+  <% end %>
+
   <% if flash[:errors] && !flash[:errors].empty? %>
       Sorry, there were the following problems with the form.
       <ul id='errors'>
@@ -8,8 +12,6 @@
       </ul>
   <% end %>
       
-  <% if current_user %>
-    Welcome, <%= current_user.email %>
-  <% end %>
   <%= yield %>
+  
 </body> 
