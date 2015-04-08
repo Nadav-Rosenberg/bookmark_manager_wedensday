@@ -19,8 +19,6 @@ class BookmarkManager < Sinatra::Base
   end
 
   post '/links' do
-    puts "here"
-    p params
     url = params['url']
     title = params['title']
     Link.create(url: url, title: title)
