@@ -62,4 +62,4 @@ Style/Semicolon:
   AllowAsExpressionSeparator: false
 
 Metrics/LineLength:
-  Max: 110
+  Max: 133
