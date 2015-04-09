@@ -15,12 +15,12 @@ require './lib/user'
 DataMapper.finalize
 DataMapper.auto_upgrade!
 
-
 class BookmarkManager < Sinatra::Base
 
   enable :sessions
   set :session_secret, 'super secret'
   use Rack::Flash
+  use Rack::MethodOverride
 
   helpers do
 
@@ -72,7 +72,25 @@ class BookmarkManager < Sinatra::Base
   end
 
   post '/sessions' do
-    "Welcome, #{User.first.email}"
+    email, password = params[:email], params[:password]
+    user = User.authenticate(email, password)
+    if user
+      session[:user_id] = user.id
+      redirect to('/')
+    else
+      flash[:errors] = ['The email or password is incorrect']
+      erb :'sessions/new'
+    end
+  end
+
+  delete '/sessions' do
+    session[:user_id] = nil
+    flash[:notice] = 'Good bye!'
+    redirect('/')
+  end
+
+  post '/sign_out' do
+    'Good bye!'
   end
 
   # start the server if ruby file executed directly
