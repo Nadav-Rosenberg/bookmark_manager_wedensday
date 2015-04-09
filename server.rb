@@ -3,6 +3,8 @@ require 'data_mapper'
 require 'tilt/erb'
 require 'rack-flash'
 require 'bcrypt'
+require 'sinatra/partial'
+require './lib/controllers/applications'
 
 env = ENV['RACK_ENV'] || 'development'
 
@@ -16,6 +18,10 @@ DataMapper.finalize
 DataMapper.auto_upgrade!
 
 class BookmarkManager < Sinatra::Base
+
+  configure do
+    register Sinatra::Partial
+  end
 
   enable :sessions
   set :session_secret, 'super secret'
@@ -72,15 +78,25 @@ class BookmarkManager < Sinatra::Base
   end
 
   post '/sessions' do
-    email, password = params[:email], params[:password]
-    user = User.authenticate(email, password)
-    if user
-      session[:user_id] = user.id
-      redirect to('/')
+
+    if params[:submit] == 'Sign in'
+      email, password = params[:email], params[:password]
+      user = User.authenticate(email, password)
+      if user
+        session[:user_id] = user.id
+        redirect to('/')
+      else
+        flash[:errors] = ['The email or password is incorrect']
+        erb :'sessions/new'
+      end
     else
-      flash[:errors] = ['The email or password is incorrect']
-      erb :'sessions/new'
+      email = params[:email]
+      User.first(email: email).update(password_token: randon_token, password_token_timestamp: Time.now)
     end
+  end
+
+  def randon_token
+    (1..64).map { ('A'..'Z').to_a.sample }.join
   end
 
   delete '/sessions' do
