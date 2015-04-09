@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'data_mapper'
 require 'tilt/erb'
 require 'rack-flash'
+require 'bcrypt'
 
 env = ENV['RACK_ENV'] || 'development'
 
@@ -13,6 +14,7 @@ require './lib/user'
 
 DataMapper.finalize
 DataMapper.auto_upgrade!
+
 
 class BookmarkManager < Sinatra::Base
 
@@ -46,7 +48,6 @@ class BookmarkManager < Sinatra::Base
   get '/tags/:text' do
     tag = Tag.first(text: params[:text])
     @links = tag ? tag.links : []
-    p params
     erb :homepage
   end
 
@@ -64,6 +65,14 @@ class BookmarkManager < Sinatra::Base
       flash.now[:errors] = @user.errors.full_messages
       erb :'users/new'
     end
+  end
+
+  get '/sessions/new' do
+    erb :'sessions/new'
+  end
+
+  post '/sessions' do
+    "Welcome, #{User.first.email}"
   end
 
   # start the server if ruby file executed directly
